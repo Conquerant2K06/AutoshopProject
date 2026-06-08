@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Paiement - AutoShop{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm mt-5">
+                <div class="card-header bg-success text-white text-center">
+                    <h3 class="mb-0">Paiement sécurisé</h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="display-1">💳</div>
+                        <h4>Montant à payer : {{ order.total_amount|floatformat:0 }} FCFA</h4>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="alert alert-info">
+                            <strong>Mode de paiement :</strong> {{ order.get_payment_method_display }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Numéro de carte</label>
+                            <input type="text" class="form-control" placeholder="1234 5678 9012 3456" required>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Date d'expiration</label>
+                                <input type="text" class="form-control" placeholder="MM/AA" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">CVV</label>
+                                <input type="text" class="form-control" placeholder="123" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Nom sur la carte</label>
+                            <input type="text" class="form-control" placeholder="JEAN DUPONT" required>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" id="saveCard">
+                            <label class="form-check-label" for="saveCard">Enregistrer cette carte pour mes prochains achats</label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success w-100">
+                            Payer {{ order.total_amount|floatformat:0 }} FCFA
+                        </button>
+                    </form>
+                    
+                    <hr>
+                    
+                    <div class="text-center">
+                        <small class="text-muted">
+                            Paiement 100% sécurisé<br>
+                            Nous acceptons les cartes Visa, Mastercard et American Express
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

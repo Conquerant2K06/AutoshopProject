@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Finaliser l'achat - AutoShop{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Finaliser votre achat</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="delivery_address" class="form-label">Adresse de livraison</label>
+                            {{ form.delivery_address }}
+                            {% if form.delivery_address.errors %}
+                                <div class="text-danger">{{ form.delivery_address.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="delivery_city" class="form-label">Ville</label>
+                                {{ form.delivery_city }}
+                                {% if form.delivery_city.errors %}
+                                    <div class="text-danger">{{ form.delivery_city.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="delivery_postal_code" class="form-label">Code postal</label>
+                                {{ form.delivery_postal_code }}
+                                {% if form.delivery_postal_code.errors %}
+                                    <div class="text-danger">{{ form.delivery_postal_code.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="payment_method" class="form-label">Mode de paiement</label>
+                            {{ form.payment_method }}
+                            {% if form.payment_method.errors %}
+                                <div class="text-danger">{{ form.payment_method.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <strong>Informations importantes :</strong>
+                            <ul class="mb-0">
+                                <li>Vous recevrez un email de confirmation après validation</li>
+                                <li>Délai de livraison : 3-5 jours ouvrés</li>
+                                <li>Paiement 100% sécurisé</li>
+                            </ul>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success w-100">
+                            Continuer vers le paiement
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h4 class="mb-0">Résumé de la commande</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Véhicule :</span>
+                        <strong>{{ vehicle.brand.name }} {{ vehicle.model }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Année :</span>
+                        <span>{{ vehicle.year }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span>Kilométrage :</span>
+                        <span>{% if vehicle.mileage %}{{ vehicle.mileage }} km{% else %}Neuf{% endif %}</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="h5">Total :</span>
+                        <span class="h5 text-primary">{{ vehicle.price|floatformat:0 }} FCFA</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

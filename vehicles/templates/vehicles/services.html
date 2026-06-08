@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nos services - AutoShop{% endblock %}
+
+{% block content %}
+<style>
+    .services-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 80px 0;
+        color: white;
+    }
+    
+    .service-card {
+        transition: all 0.3s;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        padding: 30px;
+        text-align: center;
+        height: 100%;
+    }
+    
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+    
+    .service-icon {
+        font-size: 60px;
+        color: #667eea;
+        margin-bottom: 20px;
+    }
+    
+    .process-step {
+        text-align: center;
+        position: relative;
+    }
+    
+    .step-number {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="services-hero">
+    <div class="container text-center">
+        <h1 class="display-3 fw-bold mb-4">Nos services</h1>
+        <p class="lead">Des solutions complètes pour l'achat de votre véhicule</p>
+    </div>
+</section>
+
+<!-- Services principaux -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="service-card bg-white">
+                    <div class="service-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h4>Recherche personnalisée</h4>
+                    <p>Nous vous aidons à trouver le véhicule qui correspond parfaitement à vos besoins et à votre budget.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service-card bg-white">
+                    <div class="service-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h4>Financement</h4>
+                    <p>Solutions de financement adaptées avec nos partenaires bancaires.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service-card bg-white">
+                    <div class="service-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h4>Expertise technique</h4>
+                    <p>Véhicules inspectés et garantis par nos experts.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service-card bg-white">
+                    <div class="service-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <h4>Livraison à domicile</h4>
+                    <p>Livraison rapide et sécurisée partout en Côte d'Ivoire.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service-card bg-white">
+                    <div class="service-icon">
+                        <i class="fas fa-file-signature"></i>
+                    </div>
+                    <h4>Administratif simplifié</h4>
+                    <p>Nous nous occupons de toutes les formalités administratives.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="service-card bg-white">
+                    <div class="service-icon">
+                        <i class="fas fa-wrench"></i>
+                    </div>
+                    <h4>Service après-vente</h4>
+                    <p>Garantie et entretien assurés par notre réseau de partenaires.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Processus -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Comment ça marche ?</h2>
+            <p class="lead">Acheter votre véhicule en 4 étapes simples</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h5>Recherche</h5>
+                    <p>Parcourez notre catalogue et trouvez votre véhicule idéal</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h5>Contact</h5>
+                    <p>Contactez-nous pour plus d'informations ou un essai</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h5>Achat</h5>
+                    <p>Finalisez votre achat en toute sécurité</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h5>Livraison</h5>
+                    <p>Recevez votre véhicule à domicile</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ teaser -->
+<section class="py-5">
+    <div class="container text-center">
+        <h2 class="fw-bold mb-4">Des questions ?</h2>
+        <p class="lead mb-4">Consultez notre FAQ pour trouver rapidement des réponses</p>
+        <a href="{% url 'faq' %}" class="btn btn-primary btn-lg">
+            Voir la FAQ <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+</section>
+{% endblock %}

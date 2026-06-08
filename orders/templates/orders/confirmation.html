@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmation de commande - AutoShop{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm mt-5">
+                <div class="card-header bg-success text-white text-center">
+                    <div class="display-1">✓</div>
+                    <h3>Commande confirmée !</h3>
+                </div>
+                <div class="card-body text-center">
+                    <p class="lead">Merci pour votre achat !</p>
+                    <p>Votre commande a été enregistrée avec succès.</p>
+                    
+                    <div class="alert alert-info">
+                        <strong>Numéro de commande :</strong> #{{ order.id }}<br>
+                        <strong>Date :</strong> {{ order.order_date|date:"d/m/Y H:i" }}<br>
+                        <strong>Montant total :</strong> {{ order.total_amount|floatformat:0 }} FCFA
+                    </div>
+                    
+                    <h5>Récapitulatif de la commande</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>Véhicule</th>
+                                <td>{{ order.vehicle.brand.name }} {{ order.vehicle.model }}</td>
+                            </tr>
+                            <tr>
+                                <th>Année</th>
+                                <td>{{ order.vehicle.year }}</td>
+                            </tr>
+                            <tr>
+                                <th>Adresse de livraison</th>
+                                <td>
+                                    {{ order.delivery_address }}<br>
+                                    {{ order.delivery_city }} - {{ order.delivery_postal_code }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Statut</th>
+                                <td>
+                                    {% if order.status == 'CONFIRMED' %}
+                                        <span class="badge bg-info">Confirmée</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">{{ order.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <p>Un email de confirmation vous a été envoyé.</p>
+                        <p>Notre équipe vous contactera sous 24h pour organiser la livraison.</p>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'vehicle_list' %}" class="btn btn-primary">
+                            Continuer mes achats
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

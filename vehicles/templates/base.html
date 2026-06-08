@@ -1,0 +1,282 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AutoShop - Achat de véhicules{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/logo.png' %}">
+    <link rel="icon" type="image/png" href="{% static 'images/logo.png' %}">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Styles navbar modernes */
+        .navbar {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%) !important;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            padding: 1rem 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+        
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            margin: 0 0.5rem;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            color: #ff6b6b !important;
+            transform: translateY(-2px);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #ff6b6b;
+            transition: all 0.3s;
+            transform: translateX(-50%);
+        }
+        
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 80%;
+        }
+        
+        .dropdown-menu {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-top: 10px;
+        }
+        
+        .dropdown-item {
+            color: white;
+            transition: all 0.3s;
+            border-radius: 10px;
+            margin: 5px 10px;
+        }
+        
+        .dropdown-item:hover {
+            background: #ff6b6b;
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .btn-outline-nav {
+            border: 2px solid #ff6b6b;
+            border-radius: 50px;
+            padding: 8px 20px;
+            transition: all 0.3s;
+        }
+        
+        .btn-outline-nav:hover {
+            background: #ff6b6b;
+            color: white !important;
+            transform: translateY(-2px);
+        }
+        
+        .navbar-toggler {
+            border: none;
+            background: #ff6b6b;
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+        
+        @media (max-width: 991px) {
+            .navbar-nav {
+                margin-top: 20px;
+            }
+            
+            .nav-link::after {
+                display: none;
+            }
+            
+            .btn-outline-nav {
+                display: inline-block;
+                width: fit-content;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <!-- Logo et nom -->
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <div style="display: inline-block;">
+                    <img src="{% static 'images/logo.png' %}" 
+                         alt="AutoShop Logo" 
+                         height="45" 
+                         width="45" 
+                         style="border-radius: 50%; object-fit: cover;">
+                </div>
+                <span class="ms-2" style="font-weight: 700; background: linear-gradient(135deg, #fff 0%, #ff6b6b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    AutoShop
+                </span>
+            </a>
+            
+            <!-- Bouton mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <!-- Menu principal -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <!-- Accueil -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">
+                            <i class="fas fa-home"></i> Accueil
+                        </a>
+                    </li>
+                    
+                    <!-- Véhicules -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'vehicles' in request.path %}active{% endif %}" href="{% url 'vehicle_list' %}">
+                            <i class="fas fa-car"></i> Véhicules
+                        </a>
+                    </li>
+                    
+                    <!-- Services -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'services' in request.path %}active{% endif %}" href="{% url 'services' %}">
+                            <i class="fas fa-concierge-bell"></i> Services
+                        </a>
+                    </li>
+                    
+                    <!-- À propos -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'about' in request.path %}active{% endif %}" href="{% url 'about' %}">
+                            <i class="fas fa-info-circle"></i> À propos
+                        </a>
+                    </li>
+                    
+                    <!-- Contact -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'contact' in request.path %}active{% endif %}" href="{% url 'contact' %}">
+                            <i class="fas fa-envelope"></i> Contact
+                        </a>
+                    </li>
+                    
+                    <!-- FAQ -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'faq' in request.path %}active{% endif %}" href="{% url 'faq' %}">
+                            <i class="fas fa-question-circle"></i> FAQ
+                        </a>
+                    </li>
+                    
+                    <!-- Espace utilisateur -->
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle"></i> {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'profile' %}">
+                                    <i class="fas fa-id-card"></i> Mon profil
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'my_orders' %}">
+                                    <i class="fas fa-shopping-cart"></i> Mes commandes
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">
+                                            <i class="fas fa-sign-out-alt"></i> Déconnexion
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link btn-outline-nav" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt"></i> Connexion
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link btn-outline-nav" href="{% url 'register' %}">
+                                <i class="fas fa-user-plus"></i> Inscription
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container-fluid mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-dark text-white mt-5 py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-car"></i> AutoShop</h5>
+                    <p>Votre partenaire de confiance pour l'achat de véhicules en ligne.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Liens utiles</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'about' %}" class="text-white-50">À propos</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-white-50">Contact</a></li>
+                        <li><a href="{% url 'services' %}" class="text-white-50">Nos services</a></li>
+                        <li><a href="{% url 'faq' %}" class="text-white-50">FAQ</a></li>
+                        <li><a href="#" class="text-white-50">Conditions générales</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact</h5>
+                    <p><i class="fas fa-phone"></i> +225 07 77612521</p>
+                    <p><i class="fas fa-envelope"></i> contact@autoshop.com</p>
+                    <div class="social-links mt-3">
+                        <a href="#" class="text-white me-3"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-white me-3"><i class="fab fa-instagram fa-lg"></i></a>
+                        <a href="#" class="text-white"><i class="fab fa-linkedin fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="mt-4">
+            <div class="text-center">
+                <small>&copy; 2024 AutoShop. Tous droits réservés.</small>
+            </div>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

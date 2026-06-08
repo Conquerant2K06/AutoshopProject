@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}FAQ - AutoShop{% endblock %}
+
+{% block content %}
+<style>
+    .faq-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 60px 0;
+        color: white;
+    }
+    
+    .faq-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+    
+    .faq-question {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .faq-question:hover {
+        background: #f8f9fa;
+    }
+    
+    .faq-question h4 {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+    
+    .faq-answer {
+        display: none;
+        padding: 20px;
+        border-top: 1px solid #eee;
+        background: #f8f9fa;
+        border-radius: 0 0 15px 15px;
+    }
+    
+    .faq-answer.show {
+        display: block;
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="faq-hero">
+    <div class="container text-center">
+        <h1 class="display-3 fw-bold mb-4">Foire aux questions</h1>
+        <p class="lead">Trouvez les réponses à vos questions</p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="faq-card">
+                    <div class="faq-question" onclick="toggleAnswer(1)">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4>❓ Comment puis-je acheter un véhicule sur AutoShop ?</h4>
+                            <i class="fas fa-chevron-down" id="icon-1"></i>
+                        </div>
+                    </div>
+                    <div class="faq-answer" id="answer-1">
+                        <p>Pour acheter un véhicule sur AutoShop :</p>
+                        <ol>
+                            <li>Créez un compte sur notre plateforme</li>
+                            <li>Parcourez notre catalogue de véhicules</li>
+                            <li>Sélectionnez le véhicule qui vous intéresse</li>
+                            <li>Cliquez sur "Acheter maintenant"</li>
+                            <li>Remplissez le formulaire de commande</li>
+                            <li>Effectuez le paiement sécurisé</li>
+                            <li>Recevez votre véhicule à domicile</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="faq-card">
+                    <div class="faq-question" onclick="toggleAnswer(2)">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4>❓ Quels sont les modes de paiement acceptés ?</h4>
+                            <i class="fas fa-chevron-down" id="icon-2"></i>
+                        </div>
+                    </div>
+                    <div class="faq-answer" id="answer-2">
+                        <p>Nous acceptons plusieurs modes de paiement :</p>
+                        <ul>
+                            <li>Carte bancaire (Visa, Mastercard)</li>
+                            <li>PayPal</li>
+                            <li>Virement bancaire</li>
+                            <li>Paiement en plusieurs fois (sous conditions)</li>
+                            <li>Financement bancaire avec nos partenaires</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-card">
+                    <div class="faq-question" onclick="toggleAnswer(3)">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4>❓ Puis-je essayer le véhicule avant l'achat ?</h4>
+                            <i class="fas fa-chevron-down" id="icon-3"></i>
+                        </div>
+                    </div>
+                    <div class="faq-answer" id="answer-3">
+                        <p>Oui, nous proposons des essais routiers pour tous nos véhicules. Contactez-nous pour prendre rendez-vous dans notre showroom. Un essai routier gratuit et sans engagement vous sera proposé.</p>
+                    </div>
+                </div>
+
+                <div class="faq-card">
+                    <div class="faq-question" onclick="toggleAnswer(4)">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4>❓ Quelle est la garantie sur les véhicules ?</h4>
+                            <i class="fas fa-chevron-down" id="icon-4"></i>
+                        </div>
+                    </div>
+                    <div class="faq-answer" id="answer-4">
+                        <p>Nos garanties :</p>
+                        <ul>
+                            <li>Véhicules neufs : garantie constructeur 5 ans</li>
+                            <li>Véhicules d'occasion : garantie 6 mois minimum</li>
+                            <li>Extension de garantie possible jusqu'à 2 ans</li>
+                            <li>Garantie satisfaction 7 jours (reprise possible)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-card">
+                    <div class="faq-question" onclick="toggleAnswer(5)">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4>❓ Quels sont les délais de livraison ?</h4>
+                            <i class="fas fa-chevron-down" id="icon-5"></i>
+                        </div>
+                    </div>
+                    <div class="faq-answer" id="answer-5">
+                        <p>Délais de livraison :</p>
+                        <ul>
+                            <li>Abidjan et sa banlieue : 24-48h</li>
+                            <li>Autres villes de Côte d'Ivoire : 3-5 jours ouvrés</li>
+                            <li>Livraison internationale : nous contacter</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-card">
+                    <div class="faq-question" onclick="toggleAnswer(6)">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4>❓ Puis-je retourner le véhicule après achat ?</h4>
+                            <i class="fas fa-chevron-down" id="icon-6"></i>
+                        </div>
+                    </div>
+                    <div class="faq-answer" id="answer-6">
+                        <p>Oui, vous bénéficiez d'un droit de rétractation de 7 jours ouvrés à compter de la livraison. Le véhicule doit être retourné dans son état d'origine.</p>
+                    </div>
+                </div>
+
+                <div class="faq-card">
+                    <div class="faq-question" onclick="toggleAnswer(7)">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4>❓ Comment contacter le service client ?</h4>
+                            <i class="fas fa-chevron-down" id="icon-7"></i>
+                        </div>
+                    </div>
+                    <div class="faq-answer" id="answer-7">
+                        <p>Vous pouvez nous contacter :</p>
+                        <ul>
+                            <li>Par téléphone : +225 07 77 61 25 21</li>
+                            <li>Par email : contact@autoshop.com</li>
+                            <li>Via notre formulaire de contact</li>
+                            <li>En visitant notre showroom à Abidjan</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function toggleAnswer(id) {
+    const answer = document.getElementById(`answer-${id}`);
+    const icon = document.getElementById(`icon-${id}`);
+    
+    if (answer.classList.contains('show')) {
+        answer.classList.remove('show');
+        icon.classList.remove('fa-chevron-up');
+        icon.classList.add('fa-chevron-down');
+    } else {
+        answer.classList.add('show');
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
+    }
+}
+</script>
+{% endblock %}

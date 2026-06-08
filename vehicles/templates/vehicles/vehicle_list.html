@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nos véhicules - AutoShop{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar avec filtres -->
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Filtres</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get">
+                        <!-- Recherche -->
+                        <div class="mb-3">
+                            <label class="form-label">Recherche</label>
+                            <input type="text" name="search" class="form-control" placeholder="Marque, modèle..." value="{{ request.GET.search }}">
+                        </div>
+                        
+                        <!-- Marque -->
+                        <div class="mb-3">
+                            <label class="form-label">Marque</label>
+                            <select name="brand" class="form-select">
+                                <option value="">Toutes les marques</option>
+                                {% for brand in brands %}
+                                    <option value="{{ brand.name }}" {% if request.GET.brand == brand.name %}selected{% endif %}>
+                                        {{ brand.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <!-- Prix -->
+                        <div class="mb-3">
+                            <label class="form-label">Prix (FCFA)</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    <input type="number" name="min_price" class="form-control" placeholder="Min" value="{{ request.GET.min_price }}">
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" name="max_price" class="form-control" placeholder="Max" value="{{ request.GET.max_price }}">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Carburant -->
+                        <div class="mb-3">
+                            <label class="form-label">Carburant</label>
+                            <select name="fuel_type" class="form-select">
+                                <option value="">Tous</option>
+                                {% for value, label in fuel_choices %}
+                                    <option value="{{ value }}" {% if request.GET.fuel_type == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <!-- Transmission -->
+                        <div class="mb-3">
+                            <label class="form-label">Transmission</label>
+                            <select name="transmission" class="form-select">
+                                <option value="">Toutes</option>
+                                {% for value, label in transmission_choices %}
+                                    <option value="{{ value }}" {% if request.GET.transmission == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <!-- Condition -->
+                        <div class="mb-3">
+                            <label class="form-label">Condition</label>
+                            <select name="condition" class="form-select">
+                                <option value="">Tous</option>
+                                <option value="NEW" {% if request.GET.condition == 'NEW' %}selected{% endif %}>Neuf</option>
+                                <option value="USED" {% if request.GET.condition == 'USED' %}selected{% endif %}>Occasion</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Appliquer les filtres</button>
+                        <a href="{% url 'vehicle_list' %}" class="btn btn-secondary w-100 mt-2">Réinitialiser</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Liste des véhicules -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Nos véhicules</h2>
+                <p class="text-muted mb-0">{{ page_obj.paginator.count }} véhicule(s) trouvé(s)</p>
+            </div>
+            
+            <div class="row">
+                {% for vehicle in vehicles %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm vehicle-card">
+                            {% if vehicle.images %}
+                                <!-- Image uploadée via l'admin -->
+                                <img src="{{ vehicle.images.url }}" class="card-img-top" alt="{{ vehicle.brand.name }} {{ vehicle.model }}" style="height: 200px; object-fit: cover;">
+                            {% else %}
+                                <!-- Image statique basée sur la marque -->
+                                {% with brand_name=vehicle.brand.name|lower %}
+                                    <img src="{% static 'images/vehicles/default-car.jpg' %}" 
+                                         class="card-img-top" 
+                                         alt="{{ vehicle.brand.name }} {{ vehicle.model }}" 
+                                         style="height: 200px; object-fit: cover;">
+                                {% endwith %}
+                            {% endif %}
+                            
+                            <!-- CORRECTION ICI : ajout du < manquant -->
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title mb-0">{{ vehicle.brand.name }} {{ vehicle.model }}</h5>
+                                    {% if vehicle.condition == 'NEW' %}
+                                        <span class="badge bg-success">Neuf</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Occasion</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <p class="text-muted small mb-2">
+                                    <i class="fas fa-calendar"></i> {{ vehicle.year }} |
+                                    <i class="fas fa-tachometer-alt"></i> 
+                                    {% if vehicle.mileage %}
+                                        {{ vehicle.mileage|floatformat:0 }} km
+                                    {% else %}
+                                        Neuf
+                                    {% endif %}
+                                </p>
+                                
+                                <p class="text-muted small mb-3">
+                                    <i class="fas fa-gas-pump"></i> {{ vehicle.get_fuel_type_display }} |
+                                    <i class="fas fa-cog"></i> {{ vehicle.get_transmission_display }}
+                                </p>
+                                
+                                <h4 class="text-primary mb-3">{{ vehicle.price|floatformat:0 }} FCFA</h4>
+                                
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'vehicle_detail' vehicle.pk %}" class="btn btn-outline-primary">Voir détails</a>
+                                    {% if user.is_authenticated and vehicle.is_available %}
+                                        <a href="{% url 'create_order' vehicle.pk %}" class="btn btn-success">Acheter maintenant</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">
+                            Aucun véhicule trouvé avec ces critères.
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Premier</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Précédent</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Suivant</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">Dernier</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .vehicle-card {
+        transition: transform 0.3s;
+    }
+    .vehicle-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2) !important;
+    }
+</style>
+{% endblock %}

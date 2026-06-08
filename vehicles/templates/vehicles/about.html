@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}À propos - AutoShop{% endblock %}
+
+{% block content %}
+<style>
+    .about-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 80px 0;
+        color: white;
+    }
+    
+    .value-card {
+        transition: transform 0.3s;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .value-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .team-card {
+        transition: all 0.3s;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .team-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+    
+    .team-img {
+        height: 250px;
+        object-fit: cover;
+    }
+    
+    .milestone {
+        text-align: center;
+        padding: 30px;
+        border-radius: 15px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .milestone h3 {
+        font-size: 3rem;
+        font-weight: bold;
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="about-hero">
+    <div class="container text-center">
+        <h1 class="display-3 fw-bold mb-4">À propos de AutoShop</h1>
+        <p class="lead">Votre partenaire de confiance pour l'achat de véhicules en Côte d'Ivoire</p>
+    </div>
+</section>
+
+<!-- Notre histoire -->
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4">
+                <h2 class="fw-bold mb-4">Notre histoire</h2>
+                <p class="lead">Fondée en 2026, AutoShop est née d'une passion pour l'automobile et d'une volonté de révolutionner l'achat de véhicules en Côte d'Ivoire.</p>
+                <p>Depuis plus de 3 mois, nous accompagnons nos clients dans la recherche de leur véhicule idéal. Notre plateforme innovante permet de comparer, choisir et acheter des véhicules neufs et d'occasion en toute simplicité.</p>
+                <p>Aujourd'hui, AutoShop est devenu un acteur incontournable du marché automobile ivoirien avec plus de 1000 clients satisfaits et un réseau de partenaires étendu.</p>
+            </div>
+            <div class="col-lg-6">
+    <img src="{% static 'images/showroom.jfif' %}" 
+         alt="AutoShop Showroom" 
+         class="img-fluid rounded-4 shadow-lg w-100"
+         style="max-height: 500px; object-fit: cover;">
+</div>
+        </div>
+    </div>
+</section>
+
+<!-- Chiffres clés -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="milestone">
+                    <h3>10+</h3>
+                    <p>Années d'expérience</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="milestone">
+                    <h3>1000+</h3>
+                    <p>Clients satisfaits</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="milestone">
+                    <h3>500+</h3>
+                    <p>Véhicules vendus</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="milestone">
+                    <h3>20+</h3>
+                    <p>Marques partenaires</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Nos valeurs -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Nos valeurs</h2>
+            <p class="lead">Ce qui nous motive au quotidien</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="value-card p-4 text-center bg-white">
+                    <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                    <h4>Confiance</h4>
+                    <p>La transparence et l'honnêteté sont au cœur de nos relations avec nos clients.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="value-card p-4 text-center bg-white">
+                    <i class="fas fa-star fa-3x text-primary mb-3"></i>
+                    <h4>Qualité</h4>
+                    <p>Nous sélectionnons rigoureusement chaque véhicule pour garantir une qualité irréprochable.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="value-card p-4 text-center bg-white">
+                    <i class="fas fa-headset fa-3x text-primary mb-3"></i>
+                    <h4>Service</h4>
+                    <p>Notre équipe est à votre écoute pour vous accompagner à chaque étape.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Notre équipe -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Notre équipe</h2>
+            <p class="lead">Des passionnés à votre service</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="team-card bg-white">
+                    <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="CEO" class="team-img w-100">
+                    <div class="p-4 text-center">
+                        <h4>Jean Kouadio</h4>
+                        <p class="text-muted">Fondateur & CEO</p>
+                        <div class="social-links">
+                            <a href="#" class="text-primary me-2"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="text-primary me-2"><i class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="team-card bg-white">
+                    <img src="https://randomuser.me/api/portraits/women/1.jpg" alt="Sales Manager" class="team-img w-100">
+                    <div class="p-4 text-center">
+                        <h4>Marie Koné</h4>
+                        <p class="text-muted">Responsable Commerciale</p>
+                        <div class="social-links">
+                            <a href="#" class="text-primary me-2"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="text-primary me-2"><i class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="team-card bg-white">
+                    <img src="https://randomuser.me/api/portraits/men/2.jpg" alt="Technical Director" class="team-img w-100">
+                    <div class="p-4 text-center">
+                        <h4>Koffi N'Guessan</h4>
+                        <p class="text-muted">Directeur Technique</p>
+                        <div class="social-links">
+                            <a href="#" class="text-primary me-2"><i class="fab fa-linkedin"></i></a>
+                            <a href="#" class="text-primary me-2"><i class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Appel à l'action -->
+<section class="py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="container text-center text-white">
+        <h2 class="fw-bold mb-4">Prêt à trouver votre véhicule ?</h2>
+        <p class="lead mb-4">Rejoignez notre communauté de clients satisfaits</p>
+        <a href="{% url 'vehicle_list' %}" class="btn btn-light btn-lg">
+            <i class="fas fa-car"></i> Explorer nos véhicules
+        </a>
+    </div>
+</section>
+{% endblock %}

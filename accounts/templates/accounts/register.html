@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inscription - AutoShop{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-sm mt-4 mb-4">
+                <div class="card-header bg-success text-white text-center">
+                    <h3 class="mb-0">Créer un compte</h3>
+                    <p class="mb-0">Rejoignez AutoShop et trouvez votre véhicule idéal</p>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                <strong>Erreurs dans le formulaire :</strong>
+                                <ul class="mb-0 mt-2">
+                                    {% for field in form %}
+                                        {% for error in field.errors %}
+                                            <li>{{ field.label }}: {{ error }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                    {% for error in form.non_field_errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="first_name" class="form-label">Prénom *</label>
+                                <input type="text" name="first_name" class="form-control" id="first_name" value="{{ form.first_name.value|default:'' }}" required>
+                                {% if form.first_name.errors %}
+                                    <div class="text-danger small">{{ form.first_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="last_name" class="form-label">Nom *</label>
+                                <input type="text" name="last_name" class="form-control" id="last_name" value="{{ form.last_name.value|default:'' }}" required>
+                                {% if form.last_name.errors %}
+                                    <div class="text-danger small">{{ form.last_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Nom d'utilisateur *</label>
+                            <input type="text" name="username" class="form-control" id="username" value="{{ form.username.value|default:'' }}" required>
+                            <small class="text-muted">150 caractères maximum. Lettres, chiffres et @/./+/-/_ uniquement.</small>
+                            {% if form.username.errors %}
+                                <div class="text-danger small">{{ form.username.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email *</label>
+                            <input type="email" name="email" class="form-control" id="email" value="{{ form.email.value|default:'' }}" required>
+                            <small class="text-muted">Nous enverrons la confirmation de commande à cette adresse.</small>
+                            {% if form.email.errors %}
+                                <div class="text-danger small">{{ form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Téléphone</label>
+                            <input type="tel" name="phone" class="form-control" id="phone" value="{{ form.phone.value|default:'' }}">
+                            <small class="text-muted">Optionnel. Pour vous contacter plus facilement.</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Adresse</label>
+                            <textarea name="address" class="form-control" id="address" rows="2">{{ form.address.value|default:'' }}</textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="city" class="form-label">Ville</label>
+                                <input type="text" name="city" class="form-control" id="city" value="{{ form.city.value|default:'' }}">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="postal_code" class="form-label">Code postal</label>
+                                <input type="text" name="postal_code" class="form-control" id="postal_code" value="{{ form.postal_code.value|default:'' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password1" class="form-label">Mot de passe *</label>
+                            <input type="password" name="password1" class="form-control" id="password1" required>
+                            <small class="text-muted">
+                                <ul class="small mb-0 mt-1">
+                                    <li>Votre mot de passe ne peut pas être trop similaire à vos autres informations personnelles.</li>
+                                    <li>Votre mot de passe doit contenir au moins 8 caractères.</li>
+                                    <li>Votre mot de passe ne peut pas être un mot de passe couramment utilisé.</li>
+                                    <li>Votre mot de passe ne peut pas être entièrement numérique.</li>
+                                </ul>
+                            </small>
+                            {% if form.password1.errors %}
+                                <div class="text-danger small">{{ form.password1.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password2" class="form-label">Confirmation du mot de passe *</label>
+                            <input type="password" name="password2" class="form-control" id="password2" required>
+                            <small class="text-muted">Entrez le même mot de passe pour confirmation.</small>
+                            {% if form.password2.errors %}
+                                <div class="text-danger small">{{ form.password2.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input type="checkbox" class="form-check-input" id="terms" required>
+                            <label class="form-check-label" for="terms">
+                                J'accepte les <a href="#">conditions générales d'utilisation</a> et la <a href="#">politique de confidentialité</a>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-user-plus"></i> S'inscrire
+                        </button>
+                    </form>
+                    
+                    <hr>
+                    
+                    <div class="text-center">
+                        <p class="mb-0">Déjà inscrit ? 
+                            <a href="{% url 'login' %}">Se connecter</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    .card-header {
+        border-bottom: none;
+    }
+    .form-control:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+</style>
+{% endblock %}
