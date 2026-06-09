@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from .models import Order, Payment
 
 class PaymentInline(admin.StackedInline):
@@ -38,13 +39,15 @@ class OrderAdmin(admin.ModelAdmin):
     
     def total_amount_display(self, obj):
         color = 'green' if obj.status == 'COMPLETED' else 'orange'
-        return format_html('<b style="color: {};">{:,} FCFA</b>', color, obj.total_amount)
+        formatted_amount = f"{obj.total_amount:,.0f}".replace(',', ' ')
+        # Utilisation de mark_safe pour interpréter le HTML
+        return mark_safe(f'<b style="color: {color};">{formatted_amount} FCFA</b>')
     total_amount_display.short_description = 'Montant total'
     
     def payment_status(self, obj):
-        if hasattr(obj, 'payment') and obj.payment.is_successful:
-            return format_html('<span style="color: green;">✓ Payé</span>')
-        return format_html('<span style="color: red;">✗ Non payé</span>')
+        if hasattr(obj, 'payment') and obj.payment and obj.payment.is_successful:
+            return mark_safe('<span style="color: green; font-weight: bold;">✓ Payé</span>')
+        return mark_safe('<span style="color: red; font-weight: bold;">✗ Non payé</span>')
     payment_status.short_description = 'Statut paiement'
     
     def delivery_info(self, obj):
@@ -76,11 +79,12 @@ class PaymentAdmin(admin.ModelAdmin):
     
     def amount_display(self, obj):
         color = 'green' if obj.is_successful else 'red'
-        return format_html('<span style="color: {}; font-weight: bold;">{:,} FCFA</span>', color, obj.amount)
+        formatted_amount = f"{obj.amount:,.0f}".replace(',', ' ')
+        return mark_safe(f'<span style="color: {color}; font-weight: bold;">{formatted_amount} FCFA</span>')
     amount_display.short_description = 'Montant'
     
     def payment_method_display(self, obj):
         if obj.stripe_payment_id:
-            return format_html('<span style="color: blue;">💳 Carte bancaire</span>')
-        return format_html('<span style="color: gray;">💰 Autre</span>')
+            return mark_safe('<span style="color: blue;">💳 Carte bancaire</span>')
+        return mark_safe('<span style="color: gray;">💰 Autre</span>')
     payment_method_display.short_description = 'Méthode'

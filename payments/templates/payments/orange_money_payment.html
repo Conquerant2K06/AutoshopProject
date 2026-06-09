@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Paiement Orange Money - AutoShop{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm mt-5">
+                <div class="card-header bg-warning text-dark text-center">
+                    <h3 class="mb-0">
+                        <i class="fas fa-money-bill-wave"></i> Orange Money
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <h4>Montant à payer :</h4>
+                        <h2 class="text-warning">{{ order.total_amount|floatformat:0 }} FCFA</h2>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Numéro Orange Money</label>
+                            <div class="input-group">
+                                <span class="input-group-text">+225</span>
+                                <input type="tel" name="phone_number" class="form-control" 
+                                       placeholder="07 77 61 25 21" required>
+                            </div>
+                            <small class="text-muted">Format: 07 77 61 25 21 (10 chiffres)</small>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> Vous allez recevoir une notification sur votre téléphone pour confirmer le paiement.
+                        </div>
+                        
+                        <button type="submit" class="btn btn-warning w-100">
+                            <i class="fas fa-check-circle"></i> Payer {{ order.total_amount|floatformat:0 }} FCFA
+                        </button>
+                        
+                        <a href="{% url 'vehicle_detail' order.vehicle.id %}" class="btn btn-secondary w-100 mt-2">
+                            <i class="fas fa-times"></i> Annuler
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

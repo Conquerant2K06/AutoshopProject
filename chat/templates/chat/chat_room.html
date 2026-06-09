@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chat Support - AutoShop{% endblock %}
+
+{% block content %}
+<style>
+    .chat-container {
+        height: calc(100vh - 200px);
+        display: flex;
+        flex-direction: column;
+    }
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        background: #f8f9fa;
+    }
+    .message {
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+    .message.sent {
+        align-items: flex-end;
+    }
+    .message.received {
+        align-items: flex-start;
+    }
+    .message-bubble {
+        max-width: 70%;
+        padding: 10px 15px;
+        border-radius: 15px;
+        word-wrap: break-word;
+    }
+    .message.sent .message-bubble {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-bottom-right-radius: 5px;
+    }
+    .message.received .message-bubble {
+        background: white;
+        border: 1px solid #dee2e6;
+        border-bottom-left-radius: 5px;
+    }
+    .message-info {
+        font-size: 11px;
+        color: #6c757d;
+        margin-top: 5px;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+    .chat-input {
+        padding: 20px;
+        background: white;
+        border-top: 1px solid #dee2e6;
+    }
+</style>
+
+<div class="container chat-container">
+    <div class="card shadow-sm h-100">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-headset"></i> Support AutoShop
+                    <small class="ms-2">
+                        <i class="fas fa-circle" style="font-size: 8px; color: #28a745;"></i> En ligne
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-body p-0 flex-grow-1 d-flex flex-column">
+            <div class="chat-messages" id="chat-messages">
+                {% for msg in messages %}
+                    <div class="message {% if msg.user == request.user %}sent{% else %}received{% endif %}" id="msg-{{ msg.id }}">
+                        <div class="message-bubble">
+                            <strong>{{ msg.user.username }}</strong><br>
+                            {{ msg.message }}
+                        </div>
+                        <div class="message-info">
+                            {{ msg.created_at|date:"H:i" }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <div class="chat-input">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="message-input" 
+                           placeholder="Votre message..." autocomplete="off">
+                    <button class="btn btn-primary" id="send-btn">
+                        <i class="fas fa-paper-plane"></i> Envoyer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const messagesDiv = document.getElementById('chat-messages');
+    const messageInput = document.getElementById('message-input');
+    const sendBtn = document.getElementById('send-btn');
+    const roomName = '{{ room_name }}';
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+    
+    // Fonction pour envoyer un message
+    async function sendMessage() {
+        const message = messageInput.value.trim();
+        if (!message) return;
+        
+        try {
+            const response = await fetch('/chat/api/send-message/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({
+                    room_name: roomName,
+                    message: message
+                })
+            });
+            
+            if (response.ok) {
+                messageInput.value = '';
+                loadMessages();
+            } else {
+                console.error('Erreur envoi');
+            }
+        } catch (error) {
+            console.error('Erreur:', error);
+        }
+    }
+    
+    // Fonction pour charger les messages
+    async function loadMessages() {
+        try {
+            const response = await fetch(`/chat/api/get-messages/${roomName}/`);
+            const data = await response.json();
+            
+            if (data.messages) {
+                messagesDiv.innerHTML = '';
+                data.messages.forEach(msg => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `message ${msg.is_mine ? 'sent' : 'received'}`;
+                    messageDiv.innerHTML = `
+                        <div class="message-bubble">
+                            <strong>${escapeHtml(msg.username)}</strong><br>
+                            ${escapeHtml(msg.message)}
+                        </div>
+                        <div class="message-info">
+                            ${msg.created_at}
+                        </div>
+                    `;
+                    messagesDiv.appendChild(messageDiv);
+                });
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            }
+        } catch (error) {
+            console.error('Erreur chargement:', error);
+        }
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    // Événements
+    sendBtn.onclick = sendMessage;
+    messageInput.onkeypress = function(e) {
+        if (e.key === 'Enter') sendMessage();
+    };
+    
+    // Charger les messages toutes les 3 secondes
+    setInterval(loadMessages, 3000);
+    
+    // Scroll en bas
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+</script>
+{% endblock %}

@@ -17,7 +17,7 @@
         <div class="col-md-6">
             <div class="card mb-4">
                 {% if vehicle.images %}
-                    <img src="{{ vehicle.images.url }}" class="card-img-top" alt="{{ vehicle.brand.name }} {{ vehicle.model }}" style="max-height: 400px; object-fit: cover;">
+                    <img src="{{ vehicle.images.url }}" class="card-img-top" id="mainImage" alt="{{ vehicle.brand.name }} {{ vehicle.model }}" style="max-height: 400px; object-fit: cover;">
                 {% else %}
                     <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 400px;">
                         <span class="text-white">Image non disponible</span>
@@ -54,6 +54,12 @@
                     <div class="mb-3">
                         <h3 class="text-primary">{{ vehicle.price|floatformat:0 }} FCFA</h3>
                     </div>
+                    
+                    <!-- Bouton favoris -->
+                    <button class="btn btn-outline-danger favorite-btn mb-3" data-vehicle-id="{{ vehicle.id }}" id="favorite-btn">
+                        <i class="{% if is_favorite %}fas{% else %}far{% endif %} fa-heart"></i>
+                        <span id="favorite-text">{% if is_favorite %}Retirer des favoris{% else %}Ajouter aux favoris{% endif %}</span>
+                    </button>
                     
                     <div class="row mb-4">
                         <div class="col-6">
@@ -162,6 +168,106 @@
         </div>
     </div>
     
+    <!-- Section avis clients -->
+    <div class="card mt-4 mb-4">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">
+                <i class="fas fa-star"></i> Avis clients ({{ vehicle.reviews.count }})
+            </h4>
+        </div>
+        <div class="card-body">
+            <!-- Moyenne des notes -->
+            <div class="average-rating mb-4 p-3 bg-light rounded">
+                <h5>Note moyenne : 
+                    {% if vehicle.reviews.count > 0 %}
+                        {% with total_rating=0 %}
+                            {% for review in vehicle.reviews.all %}
+                                {# Le calcul est fait dans la vue, on affiche juste #}
+                            {% endfor %}
+                        {% endwith %}
+                        <span class="text-warning">{{ vehicle.avg_rating|floatformat:1|default:"0.0" }}</span> / 5
+                    {% else %}
+                        <span class="text-muted">Pas encore d'avis</span>
+                    {% endif %}
+                </h5>
+                <div class="stars-display">
+                    {% with avg=vehicle.avg_rating|default:0 %}
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= avg %}
+                                <i class="fas fa-star text-warning"></i>
+                            {% elif forloop.counter <= avg|add:0.5 %}
+                                <i class="fas fa-star-half-alt text-warning"></i>
+                            {% else %}
+                                <i class="far fa-star text-warning"></i>
+                            {% endif %}
+                        {% endfor %}
+                    {% endwith %}
+                </div>
+            </div>
+            
+            <!-- Bouton donner son avis -->
+            {% if user.is_authenticated %}
+                {% with user_review_exists=False %}
+                    {% for review in vehicle.reviews.all %}
+                        {% if review.user == user %}
+                            {% with user_review_exists=True %}
+                            {% endwith %}
+                        {% endif %}
+                    {% endfor %}
+                {% endwith %}
+                <a href="{% url 'add_review' vehicle.id %}" class="btn btn-primary mb-3">
+                    <i class="fas fa-pen"></i> Donner mon avis
+                </a>
+            {% else %}
+                <div class="alert alert-info">
+                    <a href="{% url 'login' %}">Connectez-vous</a> pour donner votre avis
+                </div>
+            {% endif %}
+            
+            <!-- Liste des avis -->
+            <div class="reviews-list">
+                {% for review in vehicle.reviews.all|slice:":10" %}
+                    <div class="border-bottom mb-3 pb-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>
+                                    <i class="fas fa-user-circle"></i> {{ review.user.username }}
+                                </strong>
+                                <div class="text-warning small">
+                                    {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= review.rating %}
+                                            <i class="fas fa-star"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                {% if review.title %}
+                                    <h6 class="mt-2">{{ review.title }}</h6>
+                                {% endif %}
+                                <p class="mt-2">{{ review.comment }}</p>
+                                <small class="text-muted">
+                                    {{ review.created_at|date:"d/m/Y" }}
+                                    {% if review.user == user or user.is_staff %}
+                                        | <a href="{% url 'delete_review' review.id %}" class="text-danger" 
+                                             onclick="return confirm('Supprimer cet avis ?')">
+                                            <i class="fas fa-trash"></i> Supprimer
+                                        </a>
+                                    {% endif %}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p class="text-muted text-center py-3">
+                        <i class="fas fa-comment"></i> Aucun avis pour le moment.<br>
+                        Soyez le premier à donner votre avis !
+                    </p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
     <!-- Véhicules similaires -->
     {% if similar_vehicles %}
         <div class="row mt-4">
@@ -173,6 +279,10 @@
                             <div class="card h-100">
                                 {% if similar.images %}
                                     <img src="{{ similar.images.url }}" class="card-img-top" alt="{{ similar.brand.name }} {{ similar.model }}" style="height: 150px; object-fit: cover;">
+                                {% else %}
+                                    <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 150px;">
+                                        <i class="fas fa-car fa-3x text-white"></i>
+                                    </div>
                                 {% endif %}
                                 <div class="card-body">
                                     <h6 class="card-title">{{ similar.brand.name }} {{ similar.model }}</h6>
@@ -189,11 +299,47 @@
 </div>
 
 <script>
-function changeMainImage(src) {
-    const mainImg = document.querySelector('.card-img-top');
-    if (mainImg) {
-        mainImg.src = src;
+    // Fonction pour changer l'image principale
+    function changeMainImage(src) {
+        const mainImg = document.getElementById('mainImage');
+        if (mainImg) {
+            mainImg.src = src;
+        }
     }
-}
+    
+    // Gestion des favoris
+    const favoriteBtn = document.getElementById('favorite-btn');
+    if (favoriteBtn) {
+        favoriteBtn.addEventListener('click', async function() {
+            const vehicleId = this.dataset.vehicleId;
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+            
+            try {
+                const response = await fetch('/favorites/toggle/' + vehicleId + '/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                const icon = this.querySelector('i');
+                const text = this.querySelector('#favorite-text');
+                
+                if (data.is_favorite) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    text.textContent = 'Retirer des favoris';
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    text.textContent = 'Ajouter aux favoris';
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        });
+    }
 </script>
 {% endblock %}

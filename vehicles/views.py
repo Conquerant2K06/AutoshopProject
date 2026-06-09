@@ -1,7 +1,7 @@
 # vehicles/views.py
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView
-from django.db.models import Q, Count
+from django.db.models import Q, Avg, Count  # Ajouter Count ici
 from .models import Vehicle, Brand
 
 def home(request):
@@ -10,7 +10,7 @@ def home(request):
     best_offers = Vehicle.objects.filter(is_available=True).order_by('price')[:4]
     recent_vehicles = Vehicle.objects.filter(is_available=True).order_by('-created_at')[:8]
     popular_brands = Brand.objects.annotate(
-        vehicle_count=Count('vehicles')
+        vehicle_count=Count('vehicles')  # Count est maintenant importé
     ).filter(vehicle_count__gt=0).order_by('-vehicle_count')[:8]
     
     stats = {
@@ -87,6 +87,15 @@ class VehicleListView(ListView):
         context['brands'] = Brand.objects.all()
         context['fuel_choices'] = Vehicle.FUEL_TYPES
         context['transmission_choices'] = Vehicle.TRANSMISSION_TYPES
+        
+        # Ajouter les favoris pour chaque véhicule (si utilisateur connecté)
+        if self.request.user.is_authenticated:
+            from favorites.models import Favorite
+            favorite_vehicle_ids = Favorite.objects.filter(
+                user=self.request.user
+            ).values_list('vehicle_id', flat=True)
+            context['favorite_vehicle_ids'] = list(favorite_vehicle_ids)
+        
         return context
 
 class VehicleDetailView(DetailView):
@@ -96,8 +105,23 @@ class VehicleDetailView(DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        # Véhicules similaires
         context['similar_vehicles'] = Vehicle.objects.filter(
             brand=self.object.brand,
             is_available=True
         ).exclude(id=self.object.id)[:4]
+        
+        # Calculer la moyenne des notes
+        avg_rating = self.object.reviews.aggregate(Avg('rating'))['rating__avg']
+        context['vehicle'].avg_rating = avg_rating or 0
+        
+        # Vérifier si l'utilisateur a mis ce véhicule en favori
+        if self.request.user.is_authenticated:
+            from favorites.models import Favorite
+            context['is_favorite'] = Favorite.objects.filter(
+                user=self.request.user,
+                vehicle=self.object
+            ).exists()
+        
         return context

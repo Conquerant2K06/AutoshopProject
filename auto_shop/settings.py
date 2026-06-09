@@ -28,10 +28,25 @@ INSTALLED_APPS = [
     'rest_framework',  # Ajouter ceci
     'rest_framework.authtoken',  # Pour l'authentification par token
     'vehicles',
+    'channels',
     'corsheaders',
     'accounts',
     'orders',
+    'payments', 
+    'chat',
+    'reviews',
+    'favorites',
+    'blog',
 ]
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 # REST Framework configuration
 REST_FRAMEWORK = {
@@ -113,6 +128,25 @@ LANGUAGE_CODE = 'fr-fr'
 TIME_ZONE = 'Europe/Paris'
 USE_I18N = True
 USE_TZ = True
+
+# auto_shop/settings.py
+
+# Stripe
+STRIPE_PUBLIC_KEY = 'pk_test_votre_cle_publique'
+STRIPE_SECRET_KEY = 'sk_test_votre_cle_privee'
+STRIPE_WEBHOOK_SECRET = 'whsec_votre_webhook_secret'
+
+# Orange Money (Côte d'Ivoire)
+ORANGE_MONEY_CLIENT_ID = 'votre_client_id'
+ORANGE_MONEY_CLIENT_SECRET = 'votre_client_secret'
+ORANGE_MONEY_MERCHANT_KEY = 'votre_merchant_key'
+ORANGE_MONEY_API_URL = 'https://api.orange.com/orange-money/webpay/cm/v1/webpayment'
+
+# MTN Mobile Money
+MTN_MOMO_API_USER = 'votre_api_user'
+MTN_MOMO_API_KEY = 'votre_api_key'
+MTN_MOMO_SUBSCRIPTION_KEY = 'votre_subscription_key'
+MTN_MOMO_API_URL = 'https://sandbox.momodeveloper.mtn.com'
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'

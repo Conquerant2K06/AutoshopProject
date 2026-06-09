@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Finaliser l'achat - AutoShop{% endblock %}
 
@@ -11,7 +12,7 @@
                     <h3 class="mb-0">Finaliser votre achat</h3>
                 </div>
                 <div class="card-body">
-                    <form method="post">
+                    <form method="post" id="order-form">
                         {% csrf_token %}
                         
                         <div class="mb-3">
@@ -48,7 +49,7 @@
                             {% endif %}
                         </div>
                         
-                        <div class="alert alert-info">
+                        <div class="alert alert-info" id="payment-info">
                             <strong>Informations importantes :</strong>
                             <ul class="mb-0">
                                 <li>Vous recevrez un email de confirmation après validation</li>
@@ -57,8 +58,30 @@
                             </ul>
                         </div>
                         
-                        <button type="submit" class="btn btn-success w-100">
-                            Continuer vers le paiement
+                        <!-- Informations spécifiques selon le moyen de paiement -->
+                        <div id="stripe-info" class="payment-info-detail" style="display: none;">
+                            <div class="alert alert-secondary">
+                                <i class="fab fa-cc-visa"></i> <i class="fab fa-cc-mastercard"></i> <i class="fab fa-cc-amex"></i>
+                                <p class="mt-2 mb-0">Paiement sécurisé par carte bancaire via Stripe.</p>
+                            </div>
+                        </div>
+                        
+                        <div id="orange-info" class="payment-info-detail" style="display: none;">
+                            <div class="alert alert-secondary">
+                                <i class="fas fa-money-bill-wave"></i> Orange Money
+                                <p class="mt-2 mb-0">Vous serez redirigé vers Orange Money pour finaliser le paiement.</p>
+                            </div>
+                        </div>
+                        
+                        <div id="mtn-info" class="payment-info-detail" style="display: none;">
+                            <div class="alert alert-secondary">
+                                <i class="fas fa-mobile-alt"></i> MTN Mobile Money
+                                <p class="mt-2 mb-0">Vous serez redirigé vers MTN Mobile Money pour finaliser le paiement.</p>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success w-100" id="submit-btn">
+                            <i class="fas fa-credit-card"></i> Continuer vers le paiement
                         </button>
                     </form>
                 </div>
@@ -93,4 +116,31 @@
         </div>
     </div>
 </div>
+
+<script>
+    // Afficher les informations spécifiques selon le moyen de paiement
+    const paymentSelect = document.getElementById('payment_method');
+    const stripeInfo = document.getElementById('stripe-info');
+    const orangeInfo = document.getElementById('orange-info');
+    const mtnInfo = document.getElementById('mtn-info');
+    
+    function updatePaymentInfo() {
+        const selected = paymentSelect.value;
+        
+        stripeInfo.style.display = 'none';
+        orangeInfo.style.display = 'none';
+        mtnInfo.style.display = 'none';
+        
+        if (selected === 'CARTE') {
+            stripeInfo.style.display = 'block';
+        } else if (selected === 'ORANGE_MONEY') {
+            orangeInfo.style.display = 'block';
+        } else if (selected === 'MTN_MOMO') {
+            mtnInfo.style.display = 'block';
+        }
+    }
+    
+    paymentSelect.addEventListener('change', updatePaymentInfo);
+    updatePaymentInfo();
+</script>
 {% endblock %}

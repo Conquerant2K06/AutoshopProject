@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mes favoris - AutoShop{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                <i class="fas fa-heart"></i> Mes favoris ({{ favorites.count }})
+            </h4>
+        </div>
+        <div class="card-body">
+            {% if favorites %}
+                <div class="row">
+                    {% for favorite in favorites %}
+                        <div class="col-md-6 col-lg-4 mb-4">
+                            <div class="card h-100 shadow-sm vehicle-card">
+                                {% if favorite.vehicle.images %}
+                                    <img src="{{ favorite.vehicle.images.url }}" class="card-img-top" 
+                                         alt="{{ favorite.vehicle.brand.name }} {{ favorite.vehicle.model }}" 
+                                         style="height: 200px; object-fit: cover;">
+                                {% else %}
+                                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" 
+                                         style="height: 200px;">
+                                        <i class="fas fa-car fa-4x text-white"></i>
+                                    </div>
+                                {% endif %}
+                                
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <h5 class="card-title">
+                                            {{ favorite.vehicle.brand.name }} {{ favorite.vehicle.model }}
+                                        </h5>
+                                        <button class="btn btn-sm btn-danger favorite-btn" 
+                                                data-vehicle-id="{{ favorite.vehicle.id }}">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                    </div>
+                                    <p class="text-muted small">
+                                        <i class="fas fa-calendar"></i> {{ favorite.vehicle.year }} |
+                                        <i class="fas fa-tachometer-alt"></i> 
+                                        {% if favorite.vehicle.mileage %}
+                                            {{ favorite.vehicle.mileage }} km
+                                        {% else %}
+                                            Neuf
+                                        {% endif %}
+                                    </p>
+                                    <h5 class="text-primary">{{ favorite.vehicle.price|floatformat:0 }} FCFA</h5>
+                                    <div class="d-grid gap-2">
+                                        <a href="{% url 'vehicle_detail' favorite.vehicle.id %}" 
+                                           class="btn btn-outline-primary">
+                                            Voir détails
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-heart-broken fa-4x text-muted mb-3"></i>
+                    <h4>Aucun favori</h4>
+                    <p class="text-muted">Ajoutez des véhicules à vos favoris pour les retrouver facilement.</p>
+                    <a href="{% url 'vehicle_list' %}" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Découvrir des véhicules
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .vehicle-card {
+        transition: transform 0.3s;
+    }
+    .vehicle-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2) !important;
+    }
+    .favorite-btn {
+        transition: all 0.3s;
+    }
+    .favorite-btn:hover {
+        transform: scale(1.1);
+    }
+</style>
+
+<script>
+    // Gestion des favoris
+    document.querySelectorAll('.favorite-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const vehicleId = this.dataset.vehicleId;
+            const response = await fetch(`/favorites/toggle/${vehicleId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || '',
+                }
+            });
+            
+            if (response.ok) {
+                // Supprimer la carte du DOM
+                this.closest('.col-md-6.col-lg-4').remove();
+                // Recharger la page ou mettre à jour le compteur
+                window.location.reload();
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,9 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from .models import Brand, Vehicle, VehicleImage
-
-# Commentez ou supprimez ces imports si vous n'avez pas installé django-admin-rangefilter
-# from rangefilter.filters import DateRangeFilter, NumericRangeFilter
 
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
@@ -38,7 +36,6 @@ class VehicleImageInline(admin.TabularInline):
 class VehicleAdmin(admin.ModelAdmin):
     list_display = ['id', 'get_full_name', 'year', 'price_display', 'condition', 'fuel_type', 
                    'transmission', 'is_available', 'created_at', 'thumbnail_preview']
-    # Version simplifiée sans rangefilter (commentez les lignes avec rangefilter)
     list_filter = ['brand', 'year', 'fuel_type', 'transmission', 'condition', 'is_available', 'created_at']
     search_fields = ['brand__name', 'model', 'description', 'color']
     list_editable = ['is_available']
@@ -64,6 +61,8 @@ class VehicleAdmin(admin.ModelAdmin):
         }),
     )
     inlines = [VehicleImageInline]
+    
+    # Actions corrigées - sans caractères % dans les descriptions
     actions = ['mark_as_available', 'mark_as_unavailable', 'apply_discount']
     
     def get_full_name(self, obj):
@@ -72,7 +71,8 @@ class VehicleAdmin(admin.ModelAdmin):
     get_full_name.admin_order_field = 'model'
     
     def price_display(self, obj):
-        return format_html('<b style="color: green;">{:,} FCFA</b>', obj.price)
+        formatted_price = f"{int(obj.price):,}".replace(',', ' ')
+        return format_html('<b style="color: green;">{} FCFA</b>', formatted_price)
     price_display.short_description = 'Prix'
     
     def thumbnail_preview(self, obj):
@@ -87,6 +87,7 @@ class VehicleAdmin(admin.ModelAdmin):
         return "Aucune image principale"
     main_image_preview.short_description = 'Aperçu image principale'
     
+    # Actions corrigées
     def mark_as_available(self, request, queryset):
         updated = queryset.update(is_available=True)
         self.message_user(request, f'{updated} véhicule(s) marqué(s) comme disponible(s).')
@@ -102,8 +103,8 @@ class VehicleAdmin(admin.ModelAdmin):
         for vehicle in queryset:
             vehicle.price = vehicle.price * (1 - discount/100)
             vehicle.save()
-        self.message_user(request, f'Réduction de {discount}% appliquée à {queryset.count()} véhicule(s).')
-    apply_discount.short_description = 'Appliquer 10% de réduction'
+        self.message_user(request, f'Réduction de {discount} pour cent appliquée à {queryset.count()} véhicule(s).')
+    apply_discount.short_description = 'Appliquer 10%% de réduction'  # Double % pour l'échapper
 
 @admin.register(VehicleImage)
 class VehicleImageAdmin(admin.ModelAdmin):

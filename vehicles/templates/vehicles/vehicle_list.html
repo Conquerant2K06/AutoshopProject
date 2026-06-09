@@ -101,19 +101,14 @@
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="card h-100 shadow-sm vehicle-card">
                             {% if vehicle.images %}
-                                <!-- Image uploadée via l'admin -->
                                 <img src="{{ vehicle.images.url }}" class="card-img-top" alt="{{ vehicle.brand.name }} {{ vehicle.model }}" style="height: 200px; object-fit: cover;">
                             {% else %}
-                                <!-- Image statique basée sur la marque -->
-                                {% with brand_name=vehicle.brand.name|lower %}
-                                    <img src="{% static 'images/vehicles/default-car.jpg' %}" 
-                                         class="card-img-top" 
-                                         alt="{{ vehicle.brand.name }} {{ vehicle.model }}" 
-                                         style="height: 200px; object-fit: cover;">
-                                {% endwith %}
+                                <img src="{% static 'images/vehicles/default-car.jpg' %}" 
+                                     class="card-img-top" 
+                                     alt="{{ vehicle.brand.name }} {{ vehicle.model }}" 
+                                     style="height: 200px; object-fit: cover;">
                             {% endif %}
                             
-                            <!-- CORRECTION ICI : ajout du < manquant -->
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <h5 class="card-title mb-0">{{ vehicle.brand.name }} {{ vehicle.model }}</h5>
@@ -139,7 +134,13 @@
                                     <i class="fas fa-cog"></i> {{ vehicle.get_transmission_display }}
                                 </p>
                                 
-                                <h4 class="text-primary mb-3">{{ vehicle.price|floatformat:0 }} FCFA</h4>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="text-primary mb-0">{{ vehicle.price|floatformat:0 }} FCFA</h4>
+                                    <!-- Bouton favoris avec état initial basé sur favorite_vehicle_ids -->
+                                    <button class="btn btn-sm btn-outline-danger favorite-btn" data-vehicle-id="{{ vehicle.id }}">
+                                        <i class="{% if user.is_authenticated and vehicle.id in favorite_vehicle_ids %}fas{% else %}far{% endif %} fa-heart"></i>
+                                    </button>
+                                </div>
                                 
                                 <div class="d-grid gap-2">
                                     <a href="{% url 'vehicle_detail' vehicle.pk %}" class="btn btn-outline-primary">Voir détails</a>
@@ -153,7 +154,10 @@
                 {% empty %}
                     <div class="col-12">
                         <div class="alert alert-info text-center">
-                            Aucun véhicule trouvé avec ces critères.
+                            <i class="fas fa-car fa-3x mb-3"></i>
+                            <h4>Aucun véhicule trouvé</h4>
+                            <p>Aucun véhicule ne correspond à vos critères de recherche.</p>
+                            <a href="{% url 'vehicle_list' %}" class="btn btn-primary">Voir tous les véhicules</a>
                         </div>
                     </div>
                 {% endfor %}
@@ -205,5 +209,50 @@
         transform: translateY(-5px);
         box-shadow: 0 5px 20px rgba(0,0,0,0.2) !important;
     }
+    .favorite-btn {
+        transition: all 0.3s;
+    }
+    .favorite-btn:hover {
+        transform: scale(1.1);
+    }
+    .favorite-btn .fas.fa-heart {
+        color: #dc3545;
+    }
 </style>
+
+<script>
+    // Gestion des favoris dans la liste
+    document.querySelectorAll('.favorite-btn').forEach(btn => {
+        btn.addEventListener('click', async function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const vehicleId = this.dataset.vehicleId;
+            const icon = this.querySelector('i');
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+            
+            try {
+                const response = await fetch('/favorites/toggle/' + vehicleId + '/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.is_favorite) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        });
+    });
+</script>
 {% endblock %}

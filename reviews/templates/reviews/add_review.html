@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Donner mon avis - AutoShop{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        {% if existing_review %}
+                            Modifier mon avis
+                        {% else %}
+                            Donner mon avis
+                        {% endif %}
+                        sur {{ vehicle.brand.name }} {{ vehicle.model }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Note</label>
+                            <div class="rating-stars">
+                                {% for i in "12345"|make_list %}
+                                    <i class="star far fa-star fa-2x" data-value="{{ forloop.counter }}" 
+                                       style="cursor: pointer; color: #ffc107;"></i>
+                                {% endfor %}
+                            </div>
+                            <input type="hidden" name="rating" id="rating-value" value="{{ form.rating.value|default:'' }}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Titre de l'avis</label>
+                            {{ form.title }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Votre commentaire</label>
+                            {{ form.comment }}
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Publier mon avis
+                            </button>
+                            <a href="{% url 'vehicle_detail' vehicle.id %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Annuler
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .star {
+        transition: all 0.3s;
+        margin-right: 5px;
+    }
+    .star:hover {
+        transform: scale(1.2);
+    }
+    .star.active {
+        font-weight: 900;
+    }
+    .fas.fa-star {
+        color: #ffc107;
+    }
+</style>
+
+<script>
+    // Récupérer les éléments
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('rating-value');
+    
+    // Récupérer la note existante
+    let currentRating = parseInt(ratingInput.value) || 0;
+    
+    // Fonction pour mettre à jour l'affichage des étoiles
+    function updateStars(rating) {
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.classList.remove('far');
+                star.classList.add('fas');
+                star.classList.add('active');
+            } else {
+                star.classList.remove('fas');
+                star.classList.add('far');
+                star.classList.remove('active');
+            }
+        });
+    }
+    
+    // Afficher la note existante
+    if (currentRating > 0) {
+        updateStars(currentRating);
+    }
+    
+    // Ajouter les événements de clic sur les étoiles
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const value = parseInt(this.getAttribute('data-value'));
+            currentRating = value;
+            ratingInput.value = value;
+            updateStars(value);
+        });
+    });
+</script>
+{% endblock %}
