@@ -187,6 +187,13 @@
                         </a>
                     </li>
                     
+                    <!-- Blog -->
+                    <li class="nav-item">
+                        <a class="nav-link {% if 'blog' in request.path %}active{% endif %}" href="{% url 'blog_home' %}">
+                            <i class="fas fa-newspaper"></i> Blog
+                        </a>
+                    </li>
+                    
                     <!-- Espace utilisateur -->
                     {% if user.is_authenticated %}
                         <li class="nav-item dropdown">
@@ -199,6 +206,9 @@
                                 </a></li>
                                 <li><a class="dropdown-item" href="{% url 'my_orders' %}">
                                     <i class="fas fa-shopping-cart"></i> Mes commandes
+                                </a></li>
+                                <li><a class="dropdown-item" href="{% url 'favorite_list' %}">
+                                    <i class="fas fa-heart"></i> Mes favoris
                                 </a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
@@ -255,6 +265,7 @@
                         <li><a href="{% url 'contact' %}" class="text-white-50">Contact</a></li>
                         <li><a href="{% url 'services' %}" class="text-white-50">Nos services</a></li>
                         <li><a href="{% url 'faq' %}" class="text-white-50">FAQ</a></li>
+                        <li><a href="{% url 'blog_home' %}" class="text-white-50">Blog</a></li>
                         <li><a href="#" class="text-white-50">Conditions générales</a></li>
                     </ul>
                 </div>

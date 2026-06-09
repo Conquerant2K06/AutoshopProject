@@ -18,6 +18,7 @@ urlpatterns = [
     path('vehicles/', views.VehicleListView.as_view(), name='vehicle_list'),
     path('vehicle/<int:pk>/', views.VehicleDetailView.as_view(), name='vehicle_detail'),
     
+    
     # API
     path('api/', api_root, name='api_root'),
     path('api/', include(router.urls)),

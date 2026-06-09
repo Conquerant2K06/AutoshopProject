@@ -15,7 +15,7 @@ def blog_home(request):
     categories = Category.objects.all()
     recent_posts = posts[:5]
     
-    return render(request, 'blog/blog_home.html', {
+    return render(request, 'blog/blog.html', {
         'page_obj': page_obj,
         'categories': categories,
         'recent_posts': recent_posts

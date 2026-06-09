@@ -48,7 +48,14 @@
         
         <!-- Posts -->
         <div class="col-md-9">
-            <h1 class="mb-4">Blog Automobile</h1>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="mb-0">Blog Automobile</h1>
+                {% if user.is_superuser or user.is_staff %}
+                    <a href="{% url 'admin:blog_post_add' %}" class="btn btn-primary" target="_blank">
+                        <i class="fas fa-plus"></i> Ajouter un article
+                    </a>
+                {% endif %}
+            </div>
             
             <div class="row">
                 {% for post in page_obj %}
@@ -66,6 +73,11 @@
                             <div class="card-body">
                                 <div class="mb-2">
                                     <span class="badge bg-primary">{{ post.category.name }}</span>
+                                    {% if user.is_superuser or user.is_staff %}
+                                        <a href="{% url 'admin:blog_post_change' post.id %}" class="badge bg-warning text-dark ms-1" target="_blank">
+                                            <i class="fas fa-edit"></i> Modifier
+                                        </a>
+                                    {% endif %}
                                 </div>
                                 <h5 class="card-title">{{ post.title }}</h5>
                                 <p class="card-text text-muted">{{ post.excerpt|truncatewords:20 }}</p>
@@ -84,7 +96,16 @@
                 {% empty %}
                     <div class="col-12">
                         <div class="alert alert-info text-center">
-                            Aucun article pour le moment.
+                            <i class="fas fa-newspaper fa-3x mb-3"></i>
+                            <h4>Aucun article pour le moment</h4>
+                            {% if user.is_superuser or user.is_staff %}
+                                <p>Soyez le premier à créer un article !</p>
+                                <a href="{% url 'admin:blog_post_add' %}" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Créer mon premier article
+                                </a>
+                            {% else %}
+                                <p>Revenez bientôt pour découvrir nos nouveaux articles.</p>
+                            {% endif %}
                         </div>
                     </div>
                 {% endfor %}
@@ -117,4 +138,18 @@
         </div>
     </div>
 </div>
+
+<style>
+    .badge {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+    .badge a {
+        color: white;
+        text-decoration: none;
+    }
+    .badge a:hover {
+        color: white;
+    }
+</style>
 {% endblock %}
