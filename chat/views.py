@@ -1,4 +1,4 @@
-# chat/views.py - Version avec AJAX
+# chat/views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -25,11 +25,28 @@ def chat_room(request, room_name='support'):
             room.participants.add(admin)
         room.participants.add(request.user)
     
-    # Récupérer les messages
-    messages_list = ChatMessage.objects.filter(room=room).order_by('created_at')[:100]
+    # Traitement du message POST (formulaire classique)
+    if request.method == 'POST':
+        message_text = request.POST.get('message')
+        if message_text:
+            ChatMessage.objects.create(
+                room=room,
+                user=request.user,
+                message=message_text
+            )
+            messages.success(request, 'Message envoyé !')
+        else:
+            messages.error(request, 'Le message ne peut pas être vide.')
+        return redirect('chat_room', room_name=room_name)
     
-    # Marquer les messages comme lus
-    messages_list.filter(is_read=False).exclude(user=request.user).update(is_read=True)
+    # Récupérer les messages - CORRECTION ICI
+    all_messages = ChatMessage.objects.filter(room=room).order_by('created_at')
+    messages_list = all_messages[:100]  # Prendre les 100 premiers APRÈS le filtrage
+    
+    # Marquer les messages comme lus - CORRECTION ICI
+    # Filtrer avant d'utiliser le slice
+    unread_messages = all_messages.filter(is_read=False).exclude(user=request.user)
+    unread_messages.update(is_read=True)
     
     return render(request, 'chat/chat_room.html', {
         'room': room,
@@ -84,10 +101,14 @@ def send_message_ajax(request):
 def get_messages_ajax(request, room_name='support'):
     """API pour récupérer les messages via AJAX"""
     room = get_object_or_404(ChatRoom, name=room_name)
-    messages_list = ChatMessage.objects.filter(room=room).order_by('created_at')[:100]
     
-    # Marquer comme lus
-    messages_list.filter(is_read=False).exclude(user=request.user).update(is_read=True)
+    # Récupérer les messages - CORRECTION ICI
+    all_messages = ChatMessage.objects.filter(room=room).order_by('created_at')
+    messages_list = all_messages[:100]
+    
+    # Marquer comme lus - CORRECTION ICI
+    unread_messages = all_messages.filter(is_read=False).exclude(user=request.user)
+    unread_messages.update(is_read=True)
     
     data = []
     for msg in messages_list:

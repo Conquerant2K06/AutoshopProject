@@ -120,6 +120,29 @@
         }
     </style>
 </head>
+<script>
+    // Récupérer le nombre de messages non lus
+    function updateUnreadCount() {
+        fetch('/chat/api/unread-count/')
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.getElementById('chat-unread-count');
+                if (badge && data.unread_count > 0) {
+                    badge.textContent = data.unread_count;
+                    badge.style.display = 'inline-block';
+                } else if (badge) {
+                    badge.style.display = 'none';
+                }
+            })
+            .catch(error => console.error('Erreur:', error));
+    }
+    
+    // Mettre à jour toutes les 30 secondes
+    if (document.getElementById('chat-unread-count')) {
+        updateUnreadCount();
+        setInterval(updateUnreadCount, 30000);
+    }
+</script>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
@@ -143,99 +166,106 @@
             </button>
             
             <!-- Menu principal -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <!-- Accueil -->
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">
-                            <i class="fas fa-home"></i> Accueil
-                        </a>
+<div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav ms-auto">
+        <!-- Accueil -->
+        <li class="nav-item">
+            <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'home' %}">
+                <i class="fas fa-home"></i> Accueil
+            </a>
+        </li>
+        
+        <!-- Véhicules -->
+        <li class="nav-item">
+            <a class="nav-link {% if 'vehicles' in request.path %}active{% endif %}" href="{% url 'vehicle_list' %}">
+                <i class="fas fa-car"></i> Véhicules
+            </a>
+        </li>
+        
+        <!-- Services -->
+        <li class="nav-item">
+            <a class="nav-link {% if 'services' in request.path %}active{% endif %}" href="{% url 'services' %}">
+                <i class="fas fa-concierge-bell"></i> Services
+            </a>
+        </li>
+        
+        <!-- À propos -->
+        <li class="nav-item">
+            <a class="nav-link {% if 'about' in request.path %}active{% endif %}" href="{% url 'about' %}">
+                <i class="fas fa-info-circle"></i> À propos
+            </a>
+        </li>
+        
+        <!-- Contact -->
+        <li class="nav-item">
+            <a class="nav-link {% if 'contact' in request.path %}active{% endif %}" href="{% url 'contact' %}">
+                <i class="fas fa-envelope"></i> Contact
+            </a>
+        </li>
+        
+        <!-- FAQ -->
+        <li class="nav-item">
+            <a class="nav-link {% if 'faq' in request.path %}active{% endif %}" href="{% url 'faq' %}">
+                <i class="fas fa-question-circle"></i> FAQ
+            </a>
+        </li>
+        
+        <!-- Blog -->
+        <li class="nav-item">
+            <a class="nav-link {% if 'blog' in request.path %}active{% endif %}" href="{% url 'blog_home' %}">
+                <i class="fas fa-newspaper"></i> Blog
+            </a>
+        </li>
+        
+        <!-- Chat -->
+        <li class="nav-item">
+            <a class="nav-link {% if 'chat' in request.path %}active{% endif %}" href="{% url 'chat_room' room_name='support' %}">
+                <i class="fas fa-comments"></i> Chat
+                <span id="chat-unread-count" class="badge bg-danger ms-1" style="display: none;">0</span>
+            </a>
+        </li>
+        
+        <!-- Espace utilisateur -->
+        {% if user.is_authenticated %}
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                    <i class="fas fa-user-circle"></i> {{ user.username }}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="{% url 'profile' %}">
+                        <i class="fas fa-id-card"></i> Mon profil
+                    </a></li>
+                    <li><a class="dropdown-item" href="{% url 'my_orders' %}">
+                        <i class="fas fa-shopping-cart"></i> Mes commandes
+                    </a></li>
+                    <li><a class="dropdown-item" href="{% url 'favorite_list' %}">
+                        <i class="fas fa-heart"></i> Mes favoris
+                    </a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">
+                                <i class="fas fa-sign-out-alt"></i> Déconnexion
+                            </button>
+                        </form>
                     </li>
-                    
-                    <!-- Véhicules -->
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'vehicles' in request.path %}active{% endif %}" href="{% url 'vehicle_list' %}">
-                            <i class="fas fa-car"></i> Véhicules
-                        </a>
-                    </li>
-                    
-                    <!-- Services -->
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'services' in request.path %}active{% endif %}" href="{% url 'services' %}">
-                            <i class="fas fa-concierge-bell"></i> Services
-                        </a>
-                    </li>
-                    
-                    <!-- À propos -->
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'about' in request.path %}active{% endif %}" href="{% url 'about' %}">
-                            <i class="fas fa-info-circle"></i> À propos
-                        </a>
-                    </li>
-                    
-                    <!-- Contact -->
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'contact' in request.path %}active{% endif %}" href="{% url 'contact' %}">
-                            <i class="fas fa-envelope"></i> Contact
-                        </a>
-                    </li>
-                    
-                    <!-- FAQ -->
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'faq' in request.path %}active{% endif %}" href="{% url 'faq' %}">
-                            <i class="fas fa-question-circle"></i> FAQ
-                        </a>
-                    </li>
-                    
-                    <!-- Blog -->
-                    <li class="nav-item">
-                        <a class="nav-link {% if 'blog' in request.path %}active{% endif %}" href="{% url 'blog_home' %}">
-                            <i class="fas fa-newspaper"></i> Blog
-                        </a>
-                    </li>
-                    
-                    <!-- Espace utilisateur -->
-                    {% if user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                                <i class="fas fa-user-circle"></i> {{ user.username }}
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="{% url 'profile' %}">
-                                    <i class="fas fa-id-card"></i> Mon profil
-                                </a></li>
-                                <li><a class="dropdown-item" href="{% url 'my_orders' %}">
-                                    <i class="fas fa-shopping-cart"></i> Mes commandes
-                                </a></li>
-                                <li><a class="dropdown-item" href="{% url 'favorite_list' %}">
-                                    <i class="fas fa-heart"></i> Mes favoris
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                                        {% csrf_token %}
-                                        <button type="submit" class="dropdown-item" style="background: none; border: none; width: 100%; text-align: left;">
-                                            <i class="fas fa-sign-out-alt"></i> Déconnexion
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link btn-outline-nav" href="{% url 'login' %}">
-                                <i class="fas fa-sign-in-alt"></i> Connexion
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link btn-outline-nav" href="{% url 'register' %}">
-                                <i class="fas fa-user-plus"></i> Inscription
-                            </a>
-                        </li>
-                    {% endif %}
                 </ul>
-            </div>
-        </div>
+            </li>
+        {% else %}
+            <li class="nav-item">
+                <a class="nav-link btn-outline-nav" href="{% url 'login' %}">
+                    <i class="fas fa-sign-in-alt"></i> Connexion
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link btn-outline-nav" href="{% url 'register' %}">
+                    <i class="fas fa-user-plus"></i> Inscription
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</div>
     </nav>
 
     <main class="container-fluid mt-4">
