@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-votre-cle-secrete-ici'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.vercel.app', '.pythonanywhere.com', '127.0.0.1', 'localhost']
 
 # Application definition
 # auto_shop/settings.py
@@ -186,3 +186,6 @@ LOGOUT_REDIRECT_URL = 'vehicle_list'  # Important pour la redirection après dé
 
 # Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
+
+# Ajouter aussi CSRF_TRUSTED_ORIGINS
+CSRF_TRUSTED_ORIGINS = ['https://*.vercel.app']
